@@ -17,7 +17,7 @@ Backend API berbasis **Hono.js** dengan arsitektur **Module-based Layered Archit
 ## Folder Tree
 
 ```
-cafe-be-app/
+diklat-be-app/
 ├── drizzle/                        # Migrasi database (auto-generated oleh drizzle-kit)
 │   ├── 0000_third_apocalypse.sql
 │   └── meta/
@@ -45,7 +45,7 @@ cafe-be-app/
 │   │   ├── role/                   # CRUD role (struktur identik)
 │   │   ├── role_permission/        # CRUD role permission + RBAC query
 │   │   ├── upload/                 # Cloudinary signed upload (hanya controller + route)
-│   │   ├── cafe/                   # Domain Cafe (dish, category, order)
+│   │   ├── diklat/                   # Domain Diklat (dish, category, order)
 │   │   │   ├── dish_category/      # CRUD kategori menu makanan
 │   │   │   ├── dish/               # CRUD dish/makanan
 │   │   │   ├── dish_image/         # CRUD gambar dish (Cloudinary)
@@ -152,7 +152,7 @@ Sistem menggunakan MySQL dengan tabel-tabel utama dibagi menjadi:
 - `menus.parent_id` mendukung hierarki menu (parent → children) untuk sidebar navigation
 - `role_permissions` menghubungkan role ke menu dengan 5 flag aksi: `can_read`, `can_create`, `can_update`, `can_delete`, `can_report`
 
-**B. Domain Cafe (5 tabel)**
+**B. Domain Diklat (5 tabel)**
 - **`dish_categories`**: id, name, icon, timestamps
 - **`dishes`**: id, dish_category_id (FK→dish_categories), name, slug (UQ), description, price, thumbnail, thumbnail_public_id, is_available, is_active, timestamps
 - **`dish_images`**: id, dish_id (FK→dishes), image, image_public_id, timestamps
@@ -171,7 +171,7 @@ Sistem menggunakan MySQL dengan tabel-tabel utama dibagi menjadi:
 **D. Transaction (1 tabel)**
 - **`payments`**: id, type (enum: dish_order/reservation), dish_order_id (FK→dish_orders, nullable), reservation_id (FK→reservations, nullable), method (enum: qris/bank_transfer/cash/ewallet/credit_card), provider (enum: midtrans/xendit/manual/cashier), transaction_id, gross_amount, status (enum: pending/paid/failed/expired/cancelled/refunded), url, snap_token, paid_at, expired_at, timestamps
 
-**Total: 16 tabel** (4 RBAC + 5 Cafe + 5 Billiard + 1 Payment + 1 Schedule *di bawah Billiard*)
+**Total: 16 tabel** (4 RBAC + 5 Diklat + 5 Billiard + 1 Payment + 1 Schedule *di bawah Billiard*)
 
 ---
 
@@ -357,7 +357,7 @@ Sistem dokumentasi terdiri dari 3 lapisan:
 Zod schemas untuk semua entity:
 - **RBAC**: `roleSchema`, `menuSchema`, `userSchema`, `userRoleSummarySchema`, `navigationItemSchema`, `navigationPermissionSchema`, `rolePermissionSchema`
 - **Upload**: `uploadSignatureResponseSchema`
-- **Cafe**: `dishCategorySchema`, `dishSchema`, `dishImageSchema`, `dishOrderSchema`, `dishOrderDetailSchema`
+- **Diklat**: `dishCategorySchema`, `dishSchema`, `dishImageSchema`, `dishOrderSchema`, `dishOrderDetailSchema`
 - **Billiard**: `billiardTableTypeSchema`, `billiardTableSchema`, `billiardTableImageSchema`, `scheduleSchema`, `reservationSchema`
 - **Transaction**: `paymentSchema`
 
@@ -482,12 +482,12 @@ Seeder (`src/db/seed.ts`) membuat data awal:
   - Web Management *(parent group)*
     - Menu `/web-management/menus` → permission_path: `/api/menus`
     - Role Permission `/web-management/role-permissions` → permission_path: `/api/role-permissions`
-  - Cafe Management *(parent group)*
-    - Dish Categories `/cafe/dish-categories` → permission_path: `/api/dish-categories`
-    - Dishes `/cafe/dishes` → permission_path: `/api/dishes`
-    - Dish Images `/cafe/dish-images` → permission_path: `/api/dish-images` *(is_visible: false - tersembunyi dari navigasi, hanya untuk cek RBAC di Modal Galeri)*
-    - Dish Orders `/cafe/dish-orders` → permission_path: `/api/dish-orders`
-    - Dish Order Details `/cafe/dish-order-details` → permission_path: `/api/dish-order-details` *(is_visible: false - nested di menu Orders)*
+  - Diklat Management *(parent group)*
+    - Dish Categories `/diklat/dish-categories` → permission_path: `/api/dish-categories`
+    - Dishes `/diklat/dishes` → permission_path: `/api/dishes`
+    - Dish Images `/diklat/dish-images` → permission_path: `/api/dish-images` *(is_visible: false - tersembunyi dari navigasi, hanya untuk cek RBAC di Modal Galeri)*
+    - Dish Orders `/diklat/dish-orders` → permission_path: `/api/dish-orders`
+    - Dish Order Details `/diklat/dish-order-details` → permission_path: `/api/dish-order-details` *(is_visible: false - nested di menu Orders)*
   - Billiard Management *(parent group)*
     - Billiard Table Types `/billiard/table-types` → permission_path: `/api/billiard-table-types`
     - Billiard Tables `/billiard/tables` → permission_path: `/api/billiard-tables`
