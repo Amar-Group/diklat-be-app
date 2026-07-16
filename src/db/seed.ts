@@ -8,56 +8,204 @@ const roleSeedData = [
 ];
 
 const menuSeedData = [
+  // 1. Dashboard
   {
     name: "Dashboard",
     path: "/dashboard",
     permissionPath: null,
-    icon: null,
+    icon: "LayoutDashboard",
     parentName: null,
   },
+  // 2. User Management
+  {
+    name: "User Management",
+    path: null,
+    permissionPath: null,
+    icon: "Users",
+    parentName: null,
+  },
+  {
+    name: "Klien Korporat",
+    path: "/users/companies",
+    permissionPath: "/api/companies",
+    icon: "Building2",
+    parentName: "User Management",
+  },
+  {
+    name: "Instruktur",
+    path: "/users/instructors",
+    permissionPath: "/api/instructors",
+    icon: "GraduationCap",
+    parentName: "User Management",
+  },
+  {
+    name: "Peserta",
+    path: "/users/participants",
+    permissionPath: "/api/participants",
+    icon: "User",
+    parentName: "User Management",
+  },
+  // 3. Diklat Management
+  {
+    name: "Diklat Management",
+    path: null,
+    permissionPath: null,
+    icon: "BookOpen",
+    parentName: null,
+  },
+  {
+    name: "Program Diklat",
+    path: "/diklat/courses",
+    permissionPath: "/api/courses",
+    icon: "Library",
+    parentName: "Diklat Management",
+  },
+  {
+    name: "Manajemen Kelas",
+    path: "/diklat/classes",
+    permissionPath: "/api/classes",
+    icon: "MonitorPlay",
+    parentName: "Diklat Management",
+  },
+  // 4. LMS Studio
+  {
+    name: "LMS Studio",
+    path: null,
+    permissionPath: null,
+    icon: "Video",
+    parentName: null,
+  },
+  {
+    name: "Manajemen Modul",
+    path: "/lms/modules",
+    permissionPath: "/api/modules",
+    icon: "FolderTree",
+    parentName: "LMS Studio",
+  },
+  {
+    name: "Materi Digital",
+    path: "/lms/materials",
+    permissionPath: "/api/materials",
+    icon: "FileVideo",
+    parentName: "LMS Studio",
+  },
+  {
+    name: "Bank Soal & Kuis",
+    path: "/lms/quizzes",
+    permissionPath: "/api/quizzes",
+    icon: "FileQuestion",
+    parentName: "LMS Studio",
+  },
+  // 5. Logistik & Operasional
+  {
+    name: "Logistik & Operasional",
+    path: null,
+    permissionPath: null,
+    icon: "MapPin",
+    parentName: null,
+  },
+  {
+    name: "Jadwal Sesi",
+    path: "/logistics/sessions",
+    permissionPath: "/api/sessions",
+    icon: "CalendarDays",
+    parentName: "Logistik & Operasional",
+  },
+  {
+    name: "Data Kehadiran",
+    path: "/logistics/attendances",
+    permissionPath: "/api/attendances",
+    icon: "UserCheck",
+    parentName: "Logistik & Operasional",
+  },
+  {
+    name: "Manajemen Fasilitas",
+    path: "/logistics/facilities",
+    permissionPath: "/api/logistics",
+    icon: "Building",
+    parentName: "Logistik & Operasional",
+  },
+  // 6. Keuangan (Billing)
+  {
+    name: "Keuangan",
+    path: null,
+    permissionPath: null,
+    icon: "Receipt",
+    parentName: null,
+  },
+  {
+    name: "Manajemen Invoice",
+    path: "/finance/invoices",
+    permissionPath: "/api/invoices",
+    icon: "Banknote",
+    parentName: "Keuangan",
+  },
+  // 7. Sertifikasi & Evaluasi
+  {
+    name: "Sertifikasi & Evaluasi",
+    path: null,
+    permissionPath: null,
+    icon: "Award",
+    parentName: null,
+  },
+  {
+    name: "Testimoni & Ulasan",
+    path: "/qc/evaluations",
+    permissionPath: "/api/evaluations",
+    icon: "Star",
+    parentName: "Sertifikasi & Evaluasi",
+  },
+  {
+    name: "Penerbitan Sertifikat",
+    path: "/qc/certificates",
+    permissionPath: "/api/certificates",
+    icon: "ScrollText",
+    parentName: "Sertifikasi & Evaluasi",
+  },
+  // 8. Master Data (RBAC Asli)
   {
     name: "Master Data",
     path: null,
     permissionPath: null,
-    icon: null,
-    parentName: null,
-  },
-  {
-    name: "Web Management",
-    path: null,
-    permissionPath: null,
-    icon: null,
+    icon: "Database",
     parentName: null,
   },
   {
     name: "Role",
     path: "/master-data/roles",
     permissionPath: "/api/roles",
-    icon: null,
+    icon: "Shield",
     parentName: "Master Data",
   },
   {
     name: "User",
     path: "/master-data/users",
     permissionPath: "/api/users",
-    icon: null,
+    icon: "UsersRound",
     parentName: "Master Data",
+  },
+  // 9. Web Management (RBAC Asli)
+  {
+    name: "Web Management",
+    path: null,
+    permissionPath: null,
+    icon: "Settings",
+    parentName: null,
   },
   {
     name: "Menu",
     path: "/web-management/menus",
     permissionPath: "/api/menus",
-    icon: null,
+    icon: "MenuSquare",
     parentName: "Web Management",
   },
   {
     name: "Role Permission",
     path: "/web-management/role-permissions",
     permissionPath: "/api/role-permissions",
-    icon: null,
+    icon: "ShieldCheck",
     parentName: "Web Management",
-  },
-
+  }
 ];
 
 async function clearAllTables() {
