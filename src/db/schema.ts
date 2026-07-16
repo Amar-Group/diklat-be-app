@@ -80,7 +80,7 @@ export const companies = mysqlTable("companies", {
   address: text(),
   phone: varchar({ length: 20 }),
   email: varchar({ length: 100 }),
-  status: mysqlEnum(['active', 'inactive']).default('active'),
+  status: mysqlEnum(['active', 'inactive']).default('active').notNull(),
   created_at: datetime().default(sql`CURRENT_TIMESTAMP`).notNull(),
   updated_at: datetime().default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
@@ -152,6 +152,7 @@ export const courses = mysqlTable("courses", {
   title: varchar({ length: 255 }).notNull(),
   description: text(),
   competencies: text(),
+  is_active: boolean().default(true).notNull(),
   created_at: datetime().default(sql`CURRENT_TIMESTAMP`).notNull(),
   updated_at: datetime().default(sql`CURRENT_TIMESTAMP`).notNull(),
 });

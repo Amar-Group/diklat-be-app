@@ -9,9 +9,14 @@ import {
 export class UserWriteRepository {
   static async createUser(userData: CreateUserRequestDto) {
     try {
-      return await db.insert(users).values({
-        ...userData,
-      });
+      const result = await db.insert(users).values({
+        username: userData.email.split('@')[0],
+        email: userData.email,
+        password: userData.password,
+        name: userData.name,
+        role_id: userData.role_id,
+      }).$returningId();
+      return result;
     } catch (error) {
       throw new Error(`Failed to create user: ${error}`);
     }

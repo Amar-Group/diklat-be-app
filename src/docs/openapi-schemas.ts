@@ -170,3 +170,28 @@ export const rolePermissionSchema = z
   })
   .openapi("RolePermission");
 
+export const companySchema = z
+  .object({
+    id: z.number().int().openapi({ example: 1 }),
+    name: z.string().openapi({ example: "PT Harapan Bangsa" }),
+    address: z.string().nullable().openapi({ example: "Jl. Sudirman No. 1" }),
+    phone: z.string().nullable().openapi({ example: "081234567890" }),
+    email: z.string().nullable().openapi({ example: "hrd@harapanbangsa.co.id" }),
+    status: z.enum(['active', 'inactive']).openapi({ example: "active" }),
+    created_at: timestampSchema,
+    updated_at: timestampSchema,
+  })
+  .openapi("Company");
+
+export const courseSchema = z
+  .object({
+    id: z.number().int().openapi({ example: 1 }),
+    title: z.string().openapi({ example: "Pelatihan Kepemimpinan" }),
+    description: z.string().nullable().openapi({ example: "Pelatihan untuk calon supervisor" }),
+    competencies: z.string().nullable().openapi({ example: "Leadership, Communication" }),
+    is_active: z.boolean().openapi({ example: true }),
+    created_at: timestampSchema,
+    updated_at: timestampSchema,
+  })
+  .openapi("Course");
+

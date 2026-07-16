@@ -50,7 +50,13 @@ app.get('/docs', apiReference({
   spec: {
     url: '/openapi.json',
   },
-}));
+} as any));
+
+import companyRoutes from './app/company/route/company.route';
+import courseRoutes from './app/course/route/course.route';
+import { instructorRouter } from './app/instructor/route/instructor.route';
+import { participantRouter } from './app/participant/route/participant.route';
+import { classRouter } from './app/class/route/class.route';
 
 // API Routes - Feature based
 // Note: User routes have public login endpoint, others require JWT
@@ -58,6 +64,11 @@ app.route('/api/users', userRoutes);
 app.route('/api/roles', roleRoutes);
 app.route('/api/menus', menuRoutes);
 app.route('/api/role-permissions', rolePermissionRoutes);
+app.route('/api/companies', companyRoutes);
+app.route('/api/courses', courseRoutes);
+app.route('/api/instructors', instructorRouter);
+app.route('/api/participants', participantRouter);
+app.route('/api/classes', classRouter);
 
 // Handlers
 app.notFound(notFoundHandler);

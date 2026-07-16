@@ -3,8 +3,10 @@ import { db, menus, role_permissions, roles, users } from "./index";
 import { hash } from "bcryptjs";
 
 const roleSeedData = [
-  { code: "ADMIN", name: "Administrator" },
-  { code: "USER", name: "User" },
+  { code: "SUPER_ADMIN", name: "Super Admin (Internal)" },
+  { code: "HRD", name: "Klien Korporat (HRD)" },
+  { code: "INSTRUCTOR", name: "Instruktur/Pemateri" },
+  { code: "PARTICIPANT", name: "Peserta (Karyawan)" },
 ];
 
 const menuSeedData = [
@@ -229,23 +231,36 @@ async function seed() {
       .$returningId();
 
     console.log("Seeding users...");
-    const adminPassword = await hash("password123", 10);
-    const userPassword = await hash("password123", 10);
+    const defaultPassword = await hash("password123", 10);
 
     await db.insert(users).values([
       {
-        username: "admin_user",
-        email: "admin@example.com",
-        password: adminPassword,
-        name: "Admin User",
+        username: "superadmin",
+        email: "superadmin@example.com",
+        password: defaultPassword,
+        name: "Super Admin",
         role_id: insertedRoles[0].id,
       },
       {
-        username: "regular_user",
-        email: "user@example.com",
-        password: userPassword,
-        name: "Regular User",
+        username: "hrd_user",
+        email: "hrd@example.com",
+        password: defaultPassword,
+        name: "HRD Korporat",
         role_id: insertedRoles[1].id,
+      },
+      {
+        username: "instruktur1",
+        email: "instruktur@example.com",
+        password: defaultPassword,
+        name: "Instruktur",
+        role_id: insertedRoles[2].id,
+      },
+      {
+        username: "peserta1",
+        email: "peserta@example.com",
+        password: defaultPassword,
+        name: "Peserta",
+        role_id: insertedRoles[3].id,
       },
     ]);
 
@@ -256,7 +271,7 @@ async function seed() {
       .values(
         parentMenus.map((menu) => ({
           name: menu.name,
-          path: menu.path!,
+          path: menu.path || "",
           permission_path: menu.permissionPath,
           icon: menu.icon,
           is_visible: (menu as any).isVisible ?? true,
@@ -277,7 +292,7 @@ async function seed() {
       .values(
         childMenus.map((menu) => ({
           name: menu.name,
-          path: menu.path,
+          path: menu.path || "",
           permission_path: menu.permissionPath,
           icon: menu.icon,
           is_visible: (menu as any).isVisible ?? true,
@@ -286,23 +301,91 @@ async function seed() {
       )
       .$returningId();
 
-    const allInsertedMenuIds = [
-      ...insertedParentMenus,
-      ...insertedChildMenus,
-    ].map((menu) => menu.id);
+    const allInsertedMenus = [
+      ...parentMenus.map((menu, i) => ({ ...menu, id: insertedParentMenus[i].id })),
+      ...childMenus.map((menu, i) => ({ ...menu, id: insertedChildMenus[i].id })),
+    ];
 
     console.log("Seeding role permissions...");
-    await db.insert(role_permissions).values(
-      allInsertedMenuIds.map((menuId) => ({
+    const permissionsToInsert: any[] = [];
+
+    allInsertedMenus.forEach((menu) => {
+      // Super Admin (Access All)
+      permissionsToInsert.push({
         role_id: insertedRoles[0].id,
-        menu_id: menuId,
+        menu_id: menu.id,
         can_read: true,
         can_create: true,
         can_update: true,
         can_delete: true,
         can_report: true,
-      })),
-    );
+      });
+
+      // HRD (Klien Korporat)
+      if (
+        menu.name === "Dashboard" ||
+        menu.name === "Peserta" ||
+        menu.name === "User Management" ||
+        menu.name === "Logistik & Operasional" ||
+        menu.name === "Data Kehadiran" ||
+        menu.name === "Keuangan" ||
+        menu.name === "Manajemen Invoice"
+      ) {
+        permissionsToInsert.push({
+          role_id: insertedRoles[1].id,
+          menu_id: menu.id,
+          can_read: true,
+          can_create: menu.name === "Peserta",
+          can_update: menu.name === "Peserta",
+          can_delete: false,
+          can_report: true,
+        });
+      }
+
+      // Instructor
+      if (
+        menu.name === "Dashboard" ||
+        menu.name === "Logistik & Operasional" ||
+        menu.name === "Jadwal Sesi" ||
+        menu.name === "Data Kehadiran" ||
+        menu.name === "LMS Studio" ||
+        menu.name === "Materi Digital"
+      ) {
+        permissionsToInsert.push({
+          role_id: insertedRoles[2].id,
+          menu_id: menu.id,
+          can_read: true,
+          can_create: menu.name === "Materi Digital",
+          can_update: menu.name === "Materi Digital",
+          can_delete: false,
+          can_report: true,
+        });
+      }
+
+      // Participant
+      if (
+        menu.name === "Dashboard" ||
+        menu.name === "Diklat Management" ||
+        menu.name === "Program Diklat" ||
+        menu.name === "Manajemen Kelas" ||
+        menu.name === "LMS Studio" ||
+        menu.name === "Sertifikasi & Evaluasi" ||
+        menu.name === "Testimoni & Ulasan" ||
+        menu.name === "Penerbitan Sertifikat"
+      ) {
+        permissionsToInsert.push({
+          role_id: insertedRoles[3].id,
+          menu_id: menu.id,
+          can_read: true,
+          can_create: menu.name === "Testimoni & Ulasan",
+          can_update: menu.name === "Testimoni & Ulasan",
+          can_delete: false,
+          can_report: true,
+        });
+      }
+    });
+
+    await db.insert(role_permissions).values(permissionsToInsert);
 
     console.log("Database seeded successfully!");
     process.exit(0);

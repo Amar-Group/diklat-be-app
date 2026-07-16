@@ -1,6 +1,16 @@
 import { getMenuOpenApiDocument } from "../app/menu/route/menu.route";
 import { getRoleOpenApiDocument } from "../app/role/route/role.route";
 import { getRolePermissionOpenApiDocument } from "../app/role_permission/route/role-permission.route";
+import { getUserOpenApiDocument } from "../app/user/route/user.route";
+import { getCompanyOpenApiDocument } from "../app/company/route/company.route";
+import { getCourseOpenApiDocument } from "../app/course/route/course.route";
+import { instructorRouter } from "../app/instructor/route/instructor.route";
+import { participantRouter } from "../app/participant/route/participant.route";
+import { classRouter } from "../app/class/route/class.route";
+import { getInstructorsRoute, getInstructorByIdRoute, createInstructorRoute, updateInstructorRoute, deleteInstructorRoute } from "../app/instructor/route/instructor.openapi";
+import { getParticipantsRoute, getParticipantByIdRoute, createParticipantRoute, updateParticipantRoute, deleteParticipantRoute } from "../app/participant/route/participant.openapi";
+import { getClassesRoute, getClassByIdRoute, createClassRoute, updateClassRoute, deleteClassRoute } from "../app/class/route/class.openapi";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import type { SecurityRequirementObject } from "openapi3-ts/oas30";
 
 type OpenApiDocument = Record<string, any>;
@@ -241,6 +251,11 @@ export function createOpenApiDocument(baseUrl: string) {
       getRolePermissionOpenApiDocument(baseUrl),
       "/api/role-permissions",
     ),
+    mountOpenApiPaths(getCompanyOpenApiDocument(baseUrl), "/api/companies"),
+    mountOpenApiPaths(getCourseOpenApiDocument(baseUrl), "/api/courses"),
+    mountOpenApiPaths(getInstructorOpenApiDocument(baseUrl), "/api/instructors"),
+    mountOpenApiPaths(getParticipantOpenApiDocument(baseUrl), "/api/participants"),
+    mountOpenApiPaths(getClassOpenApiDocument(baseUrl), "/api/classes"),
   ];
 
   return moduleDocuments.reduce(
@@ -251,3 +266,33 @@ export function createOpenApiDocument(baseUrl: string) {
 }
 
 
+
+export function getInstructorOpenApiDocument(baseUrl: string) {
+  const app = new OpenAPIHono();
+  app.openapi(getInstructorsRoute, (c) => c.json({} as any));
+  app.openapi(getInstructorByIdRoute, (c) => c.json({} as any));
+  app.openapi(createInstructorRoute, (c) => c.json({} as any));
+  app.openapi(updateInstructorRoute, (c) => c.json({} as any));
+  app.openapi(deleteInstructorRoute, (c) => c.json({} as any));
+  return app.getOpenAPIDocument({ openapi: '3.0.3', info: { title: '', version: '' } });
+}
+
+export function getParticipantOpenApiDocument(baseUrl: string) {
+  const app = new OpenAPIHono();
+  app.openapi(getParticipantsRoute, (c) => c.json({} as any));
+  app.openapi(getParticipantByIdRoute, (c) => c.json({} as any));
+  app.openapi(createParticipantRoute, (c) => c.json({} as any));
+  app.openapi(updateParticipantRoute, (c) => c.json({} as any));
+  app.openapi(deleteParticipantRoute, (c) => c.json({} as any));
+  return app.getOpenAPIDocument({ openapi: '3.0.3', info: { title: '', version: '' } });
+}
+
+export function getClassOpenApiDocument(baseUrl: string) {
+  const app = new OpenAPIHono();
+  app.openapi(getClassesRoute, (c) => c.json({} as any));
+  app.openapi(getClassByIdRoute, (c) => c.json({} as any));
+  app.openapi(createClassRoute, (c) => c.json({} as any));
+  app.openapi(updateClassRoute, (c) => c.json({} as any));
+  app.openapi(deleteClassRoute, (c) => c.json({} as any));
+  return app.getOpenAPIDocument({ openapi: '3.0.3', info: { title: '', version: '' } });
+}
