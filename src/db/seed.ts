@@ -86,12 +86,14 @@ async function seed() {
 
     await db.insert(users).values([
       {
+        username: "admin_user",
         email: "admin@example.com",
         password: adminPassword,
         name: "Admin User",
         role_id: insertedRoles[0].id,
       },
       {
+        username: "regular_user",
         email: "user@example.com",
         password: userPassword,
         name: "Regular User",
