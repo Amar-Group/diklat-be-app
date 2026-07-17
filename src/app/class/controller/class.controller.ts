@@ -39,7 +39,17 @@ export class ClassController {
   static async findAll(c: Context) {
     try {
       const result = await ClassController.service.findAll();
-      return c.json({ success: true, data: result, message: "Classs fetched successfully" });
+      return c.json({ success: true, data: result });
+    } catch (error: any) {
+      return c.json({ success: false, message: error.message }, 500);
+    }
+  }
+
+  static async findMyLearning(c: Context) {
+    try {
+      const user = c.get("user");
+      const result = await ClassController.service.findMyLearning(user.id, user.role_code);
+      return c.json({ success: true, data: result });
     } catch (error: any) {
       return c.json({ success: false, message: error.message }, 500);
     }

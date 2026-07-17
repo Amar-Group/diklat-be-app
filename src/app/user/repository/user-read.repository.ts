@@ -63,8 +63,16 @@ export class UserReadRepository {
   static async getUserByEmail(email: string) {
     try {
       const result = await db
-        .select()
+        .select({
+          id: users.id,
+          email: users.email,
+          name: users.name,
+          password: users.password,
+          role_id: users.role_id,
+          role_code: roles.code,
+        })
         .from(users)
+        .innerJoin(roles, eq(users.role_id, roles.id))
         .where(eq(users.email, email))
         .limit(1);
 

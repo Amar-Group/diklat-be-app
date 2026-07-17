@@ -57,6 +57,16 @@ import courseRoutes from './app/course/route/course.route';
 import { instructorRouter } from './app/instructor/route/instructor.route';
 import { participantRouter } from './app/participant/route/participant.route';
 import { classRouter } from './app/class/route/class.route';
+import { moduleRoutes } from './app/module/route/module.route';
+import { materialRoutes } from './app/material/route/material.route';
+import { sessionRoutes } from './app/session/route/session.route';
+import { attendanceRoutes } from './app/attendance/route/attendance.route';
+import { logisticRoutes } from './app/logistic/route/logistic.route';
+import { quizRoutes } from './app/quiz/route/quiz.route';
+import { questionRoutes } from './app/question/route/question.route';
+import { invoiceRoutes } from './app/invoice/route/invoice.route';
+import { evaluationRoutes } from './app/evaluation/route/evaluation.route';
+import { certificateRoutes } from './app/certificate/route/certificate.route';
 
 // API Routes - Feature based
 // Note: User routes have public login endpoint, others require JWT
@@ -69,6 +79,16 @@ app.route('/api/courses', courseRoutes);
 app.route('/api/instructors', instructorRouter);
 app.route('/api/participants', participantRouter);
 app.route('/api/classes', classRouter);
+app.route('/api/modules', moduleRoutes);
+app.route('/api/materials', materialRoutes);
+app.route('/api/sessions', sessionRoutes);
+app.route('/api/attendances', attendanceRoutes);
+app.route('/api/logistics', logisticRoutes);
+app.route('/api/quizzes', quizRoutes);
+app.route('/api/questions', questionRoutes);
+app.route('/api/invoices', invoiceRoutes);
+app.route('/api/evaluations', evaluationRoutes);
+app.route('/api/certificates', certificateRoutes);
 
 // Handlers
 app.notFound(notFoundHandler);

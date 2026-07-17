@@ -25,6 +25,7 @@ export class UserAuthService {
       email: user.email,
       name: user.name,
       role_id: user.role_id,
+      role_code: (user as any).role_code, // from updated repository
     });
 
     return {
@@ -34,6 +35,7 @@ export class UserAuthService {
         email: user.email,
         name: user.name,
         role_id: user.role_id,
+        role_code: (user as any).role_code,
       },
     };
   }

@@ -3,6 +3,7 @@ import { CreateClassRequestDto, UpdateClassRequestDto } from "../dto/class-reque
 import { ClassResponseDto } from "../dto/class-response.dto";
 import { ClassReadRepository } from "../repository/class-read.repository";
 import { ClassWriteRepository } from "../repository/class-write.repository";
+import { ClassMemberRepository } from "../repository/class-member.repository";
 
 export class ClassService implements IClassService {
   async create(data: CreateClassRequestDto): Promise<ClassResponseDto> {
@@ -36,6 +37,20 @@ export class ClassService implements IClassService {
 
   async findAll(): Promise<ClassResponseDto[]> {
     const classes = await ClassReadRepository.findAll();
+    return classes.map((c) => new ClassResponseDto(c));
+  }
+
+  async findMyLearning(userId: number, roleCode: string): Promise<ClassResponseDto[]> {
+    let classes = await ClassReadRepository.findAll();
+    
+    if (roleCode === 'PARTICIPANT') {
+      const participantClassIds = await ClassMemberRepository.getClassesForParticipant(userId);
+      classes = classes.filter(c => participantClassIds.includes(c.id));
+    } else if (roleCode === 'INSTRUCTOR') {
+      const instructorClassIds = await ClassMemberRepository.getClassesForInstructor(userId);
+      classes = classes.filter(c => instructorClassIds.includes(c.id));
+    }
+    
     return classes.map((c) => new ClassResponseDto(c));
   }
 }

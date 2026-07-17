@@ -1,5 +1,5 @@
-import { isNotNull, isNull } from "drizzle-orm";
-import { db, menus, role_permissions, roles, users } from "./index";
+import { isNotNull, isNull, sql } from "drizzle-orm";
+import { db, menus, role_permissions, roles, users, instructor_profiles, participant_profiles, class_instructors, class_participants } from "./index";
 import { hash } from "bcryptjs";
 
 const roleSeedData = [
@@ -211,11 +211,19 @@ const menuSeedData = [
 ];
 
 async function clearAllTables() {
+  await db.execute(sql`SET FOREIGN_KEY_CHECKS = 0;`);
+  
   await db.delete(role_permissions);
-  await db.delete(menus).where(isNotNull(menus.parent_id));
-  await db.delete(menus).where(isNull(menus.parent_id));
+  await db.delete(menus);
+  await db.delete(instructor_profiles);
+  await db.delete(participant_profiles);
+  await db.delete(class_instructors);
+  await db.delete(class_participants);
+  
   await db.delete(users);
   await db.delete(roles);
+  
+  await db.execute(sql`SET FOREIGN_KEY_CHECKS = 1;`);
 }
 
 async function seed() {
@@ -233,7 +241,7 @@ async function seed() {
     console.log("Seeding users...");
     const defaultPassword = await hash("password123", 10);
 
-    await db.insert(users).values([
+    const insertedUsers = await db.insert(users).values([
       {
         username: "superadmin",
         email: "superadmin@example.com",
@@ -262,7 +270,18 @@ async function seed() {
         name: "Peserta",
         role_id: insertedRoles[3].id,
       },
-    ]);
+    ]).$returningId();
+
+    console.log("Seeding profiles...");
+    await db.insert(instructor_profiles).values({
+      user_id: insertedUsers[2].id,
+      expertise: "Umum",
+    });
+
+    await db.insert(participant_profiles).values({
+      user_id: insertedUsers[3].id,
+      nik: "1234567890",
+    });
 
     console.log("Seeding parent menus...");
     const parentMenus = menuSeedData.filter((menu) => menu.parentName === null);
@@ -324,19 +343,23 @@ async function seed() {
       // HRD (Klien Korporat)
       if (
         menu.name === "Dashboard" ||
-        menu.name === "Peserta" ||
         menu.name === "User Management" ||
+        menu.name === "Peserta" ||
+        menu.name === "Diklat Management" ||
+        menu.name === "Manajemen Kelas" ||
         menu.name === "Logistik & Operasional" ||
         menu.name === "Data Kehadiran" ||
         menu.name === "Keuangan" ||
-        menu.name === "Manajemen Invoice"
+        menu.name === "Manajemen Invoice" ||
+        menu.name === "Sertifikasi & Evaluasi" ||
+        menu.name === "Penerbitan Sertifikat"
       ) {
         permissionsToInsert.push({
           role_id: insertedRoles[1].id,
           menu_id: menu.id,
           can_read: true,
           can_create: menu.name === "Peserta",
-          can_update: menu.name === "Peserta",
+          can_update: menu.name === "Peserta" || menu.name === "Manajemen Kelas",
           can_delete: false,
           can_report: true,
         });
@@ -345,44 +368,29 @@ async function seed() {
       // Instructor
       if (
         menu.name === "Dashboard" ||
+        menu.name === "LMS Studio" ||
+        menu.name === "Manajemen Modul" ||
+        menu.name === "Materi Digital" ||
+        menu.name === "Bank Soal & Kuis" ||
         menu.name === "Logistik & Operasional" ||
         menu.name === "Jadwal Sesi" ||
         menu.name === "Data Kehadiran" ||
-        menu.name === "LMS Studio" ||
-        menu.name === "Materi Digital"
+        menu.name === "Sertifikasi & Evaluasi" ||
+        menu.name === "Testimoni & Ulasan"
       ) {
         permissionsToInsert.push({
           role_id: insertedRoles[2].id,
           menu_id: menu.id,
           can_read: true,
-          can_create: menu.name === "Materi Digital",
-          can_update: menu.name === "Materi Digital",
+          can_create: ["Materi Digital", "Bank Soal & Kuis"].includes(menu.name),
+          can_update: ["Materi Digital", "Bank Soal & Kuis"].includes(menu.name),
           can_delete: false,
           can_report: true,
         });
       }
 
-      // Participant
-      if (
-        menu.name === "Dashboard" ||
-        menu.name === "Diklat Management" ||
-        menu.name === "Program Diklat" ||
-        menu.name === "Manajemen Kelas" ||
-        menu.name === "LMS Studio" ||
-        menu.name === "Sertifikasi & Evaluasi" ||
-        menu.name === "Testimoni & Ulasan" ||
-        menu.name === "Penerbitan Sertifikat"
-      ) {
-        permissionsToInsert.push({
-          role_id: insertedRoles[3].id,
-          menu_id: menu.id,
-          can_read: true,
-          can_create: menu.name === "Testimoni & Ulasan",
-          can_update: menu.name === "Testimoni & Ulasan",
-          can_delete: false,
-          can_report: true,
-        });
-      }
+      // Participant (Tidak ada akses sidebar admin - hanya view LMS front-end,
+      // sehingga tidak di-seed permissions admin panel-nya).
     });
 
     await db.insert(role_permissions).values(permissionsToInsert);
