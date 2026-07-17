@@ -8,6 +8,11 @@ export const sessionRoutes = new Hono();
 sessionRoutes.use("*", jwtMiddleware);
 
 sessionRoutes.get(
+  "/my-learning/:classId",
+  (c) => SessionController.getMyLearningSessions(c)
+);
+
+sessionRoutes.get(
   "/",
   requirePermission("can_read"),
   (c) => SessionController.getAll(c)

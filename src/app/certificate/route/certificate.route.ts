@@ -8,6 +8,11 @@ export const certificateRoutes = new Hono();
 certificateRoutes.use("*", jwtMiddleware);
 
 certificateRoutes.get(
+  "/my-learning/:classId",
+  (c) => CertificateController.getMyLearningCertificate(c)
+);
+
+certificateRoutes.get(
   "/",
   requirePermission("can_read"),
   (c) => CertificateController.getAll(c)

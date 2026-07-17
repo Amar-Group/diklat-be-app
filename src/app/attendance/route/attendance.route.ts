@@ -7,6 +7,11 @@ export const attendanceRoutes = new Hono();
 
 attendanceRoutes.use("*", jwtMiddleware);
 
+attendanceRoutes.post(
+  "/my-learning/check-in",
+  (c) => AttendanceController.checkIn(c)
+);
+
 attendanceRoutes.get(
   "/",
   requirePermission("can_read"),

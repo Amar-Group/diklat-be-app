@@ -25,6 +25,30 @@ export class EvaluationController {
     }
   }
 
+  static async getMyLearningEvaluation(c: Context) {
+    try {
+      const classId = Number(c.req.param("classId"));
+      const user = c.get("user");
+      const data = await EvaluationService.getMyLearningEvaluation(classId, user?.id || 0);
+      return c.json({ success: true, data, message: "Data fetched successfully" });
+    } catch (error: any) {
+      return c.json({ success: false, message: error.message }, 500);
+    }
+  }
+
+  static async submitMyLearningEvaluation(c: Context) {
+    try {
+      const classId = Number(c.req.param("classId"));
+      const user = c.get("user");
+      const body = await c.req.json();
+      
+      const data = await EvaluationService.submitMyLearningEvaluation(classId, user?.id || 0, body);
+      return c.json({ success: true, data, message: "Ulasan berhasil dikirim" }, 201);
+    } catch (error: any) {
+      return c.json({ success: false, message: error.message }, 500);
+    }
+  }
+
   static async create(c: Context) {
     try {
       const body = await c.req.json();

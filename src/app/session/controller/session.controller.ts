@@ -25,6 +25,17 @@ export class SessionController {
     }
   }
 
+  static async getMyLearningSessions(c: Context) {
+    try {
+      const classId = Number(c.req.param("classId"));
+      const user = c.get("user");
+      const data = await SessionService.getMyLearningSessions(classId, user?.id || 0);
+      return c.json({ success: true, data, message: "Data fetched successfully" });
+    } catch (error: any) {
+      return c.json({ success: false, message: error.message }, 500);
+    }
+  }
+
   static async create(c: Context) {
     try {
       const body = await c.req.json();

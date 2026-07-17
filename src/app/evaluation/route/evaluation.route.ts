@@ -8,6 +8,16 @@ export const evaluationRoutes = new Hono();
 evaluationRoutes.use("*", jwtMiddleware);
 
 evaluationRoutes.get(
+  "/my-learning/:classId",
+  (c) => EvaluationController.getMyLearningEvaluation(c)
+);
+
+evaluationRoutes.post(
+  "/my-learning/:classId",
+  (c) => EvaluationController.submitMyLearningEvaluation(c)
+);
+
+evaluationRoutes.get(
   "/",
   requirePermission("can_read"),
   (c) => EvaluationController.getAll(c)

@@ -25,6 +25,22 @@ export class AttendanceController {
     }
   }
 
+  static async checkIn(c: Context) {
+    try {
+      const body = await c.req.json();
+      const user = c.get("user");
+      
+      if (!body.session_id) {
+        return c.json({ success: false, message: "session_id is required" }, 400);
+      }
+      
+      const data = await AttendanceService.checkIn(body.session_id, user?.id || 0, body.method || 'manual');
+      return c.json({ success: true, data, message: "Absensi berhasil dicatat" });
+    } catch (error: any) {
+      return c.json({ success: false, message: error.message }, 500);
+    }
+  }
+
   static async create(c: Context) {
     try {
       const body = await c.req.json();
