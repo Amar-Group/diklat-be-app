@@ -35,7 +35,14 @@ function resolvePermissionPath(requestPath: string): string | null {
       return null;
     }
 
-    return `/${segments[0]}/${segments[1]}`;
+    let permissionPath = `/${segments[0]}/${segments[1]}`;
+    
+    // Map child module permissions to their parent module's permission path
+    if (permissionPath === "/api/questions") {
+      permissionPath = "/api/quizzes";
+    }
+    
+    return permissionPath;
   }
 
   return `/${segments[0]}`;

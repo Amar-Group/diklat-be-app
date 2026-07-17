@@ -10,6 +10,7 @@ import { appTokenMiddleware } from "../../../middleware/appToken";
 const classRouter = new Hono();
 
 classRouter.get("/my-learning", jwtMiddleware, appTokenMiddleware, (c) => ClassController.findMyLearning(c));
+classRouter.get("/:id/syllabus", jwtMiddleware, appTokenMiddleware, (c) => ClassController.getSyllabus(c));
 classRouter.use("*", jwtMiddleware, appTokenMiddleware, requirePermission());
 
 classRouter.post(

@@ -13,6 +13,16 @@ quizRoutes.get(
 );
 
 quizRoutes.get(
+  "/my-learning/:id",
+  (c) => QuizController.getMyLearningQuiz(c)
+);
+
+quizRoutes.post(
+  "/my-learning/:id/submit",
+  (c) => QuizController.submitMyLearningQuiz(c)
+);
+
+quizRoutes.get(
   "/",
   requirePermission("can_read"),
   (c) => QuizController.getAll(c)

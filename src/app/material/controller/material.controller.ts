@@ -61,4 +61,15 @@ export class MaterialController {
       return c.json({ success: false, message: error.message }, 500);
     }
   }
+
+  static async markCompleted(c: Context) {
+    try {
+      const id = Number(c.req.param("id"));
+      const user = c.get("user");
+      await MaterialService.markCompleted(id, user.id);
+      return c.json({ success: true, message: "Progress saved" });
+    } catch (error: any) {
+      return c.json({ success: false, message: error.message }, 500);
+    }
+  }
 }

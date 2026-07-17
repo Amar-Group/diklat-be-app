@@ -26,4 +26,35 @@ export class MaterialService {
   static async deleteMaterial(id: number) {
     return await MaterialRepository.delete(id);
   }
+
+  static async markCompleted(materialId: number, participantId: number) {
+    const { db } = await import("../../../db");
+    const { participant_progress } = await import("../../../db/schema");
+    const { eq, and } = await import("drizzle-orm");
+
+    // Check if already exists
+    const existing = await db
+      .select()
+      .from(participant_progress)
+      .where(
+        and(
+          eq(participant_progress.participant_id, participantId),
+          eq(participant_progress.material_id, materialId)
+        )
+      )
+      .limit(1);
+
+    if (existing.length > 0) {
+      await db
+        .update(participant_progress)
+        .set({ is_completed: true })
+        .where(eq(participant_progress.id, existing[0].id));
+    } else {
+      await db.insert(participant_progress).values({
+        participant_id: participantId,
+        material_id: materialId,
+        is_completed: true,
+      });
+    }
+  }
 }

@@ -12,6 +12,11 @@ materialRoutes.get(
   (c) => MaterialController.getAll(c)
 );
 
+materialRoutes.post(
+  "/my-learning/:id/progress",
+  (c) => MaterialController.markCompleted(c)
+);
+
 materialRoutes.get(
   "/",
   requirePermission("can_read"),

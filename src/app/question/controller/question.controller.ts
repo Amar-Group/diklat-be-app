@@ -5,7 +5,13 @@ import { ZodError } from "zod";
 export class QuestionController {
   static async getAll(c: Context) {
     try {
-      const data = await QuestionService.getAllQuestions();
+      const quizId = c.req.query("quiz_id");
+      let data = await QuestionService.getAllQuestions();
+      
+      if (quizId) {
+        data = data.filter((q: any) => q.quiz_id === Number(quizId));
+      }
+      
       return c.json({ success: true, data, message: "Data fetched successfully" });
     } catch (error: any) {
       return c.json({ success: false, message: error.message }, 500);

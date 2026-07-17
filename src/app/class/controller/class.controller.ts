@@ -55,6 +55,17 @@ export class ClassController {
     }
   }
 
+  static async getSyllabus(c: Context) {
+    try {
+      const id = Number(c.req.param("id"));
+      const user = c.get("user");
+      const result = await ClassController.service.getSyllabus(id, user.id);
+      return c.json({ success: true, data: result });
+    } catch (error: any) {
+      return c.json({ success: false, message: error.message }, 500);
+    }
+  }
+
   static async findById(c: Context) {
     try {
       const id = Number(c.req.param("id"));

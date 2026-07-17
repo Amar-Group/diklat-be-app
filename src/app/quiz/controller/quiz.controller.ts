@@ -25,6 +25,35 @@ export class QuizController {
     }
   }
 
+  static async getMyLearningQuiz(c: Context) {
+    try {
+      const id = Number(c.req.param("id"));
+      const user = c.get("user");
+      const data = await QuizService.getMyLearningQuiz(id, user?.id || 0);
+      return c.json({ success: true, data, message: "Quiz for learning fetched successfully" });
+    } catch (error: any) {
+      if (error.message === "Quiz not found") {
+        return c.json({ success: false, message: error.message }, 404);
+      }
+      return c.json({ success: false, message: error.message }, 500);
+    }
+  }
+
+  static async submitMyLearningQuiz(c: Context) {
+    try {
+      const id = Number(c.req.param("id"));
+      const user = c.get("user");
+      const body = await c.req.json();
+      const data = await QuizService.submitMyLearningQuiz(id, user?.id || 0, body.answers || []);
+      return c.json({ success: true, data, message: "Quiz submitted successfully" });
+    } catch (error: any) {
+      if (error.message === "Quiz not found") {
+        return c.json({ success: false, message: error.message }, 404);
+      }
+      return c.json({ success: false, message: error.message }, 500);
+    }
+  }
+
   static async create(c: Context) {
     try {
       const body = await c.req.json();
