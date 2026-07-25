@@ -101,6 +101,9 @@ jobs:
               echo "$TOKEN" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             fi
 
+            # ── Pastikan shared network diklat-global-network ada ──
+            docker network create diklat-global-network 2>/dev/null || true
+
             # ── Pull image terbaru dari GHCR ──
             docker compose pull backend
 

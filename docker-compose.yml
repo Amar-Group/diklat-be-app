@@ -55,4 +55,4 @@ volumes:
 networks:
   diklat-global-network:
     name: diklat-global-network
-    driver: bridge
+    external: true
