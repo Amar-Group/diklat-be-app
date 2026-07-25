@@ -1,0 +1,29 @@
+# ============================================================
+# docker-compose.local.yml — Override untuk Testing Lokal
+# ============================================================
+# Cara penggunaan:
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up -d --build
+#
+# File ini MENGGANTIKAN konfigurasi image GHCR dengan
+# build lokal langsung dari source code.
+# ============================================================
+
+services:
+  # Menonaktifkan service db bawaan karena kita memakai MySQL lokal OS host
+  db:
+    scale: 0
+
+  backend:
+    # Override: build dari Dockerfile lokal, bukan pull dari GHCR
+    image: diklat-be-app:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Hapus ketergantungan (dependency) ke container db Docker
+    depends_on: []
+    # Hubungkan ke MySQL host menggunakan host.docker.internal
+    environment:
+      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@host.docker.internal:3306/${MYSQL_DATABASE}
+    # Daftarkan host.docker.internal agar container Docker Linux bisa memanggil host OS
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
