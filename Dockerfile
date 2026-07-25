@@ -30,7 +30,7 @@ COPY tsconfig.json ./
 COPY package.json ./
 
 # Expose the application port (matches PORT env var)
-EXPOSE 3000
+EXPOSE 3090
 
 # Run the app with Bun
 CMD ["bun", "src/index.ts"]
