@@ -19,10 +19,10 @@ services:
       - diklat-global-network
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER -p$$MYSQL_PASSWORD || mysqladmin ping -h 127.0.0.1 --silent || exit 0"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 10s
+      start_period: 40s
 
   # ─────────────────────────────────────────────
   # Service: Hono Backend Application
