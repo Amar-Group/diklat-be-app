@@ -35,7 +35,7 @@ services:
       # Override DATABASE_URL to point to the 'db' service container
       DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
     ports:
-      - "3000:3000"
+      - "3090:3090"
     networks:
       - diklat-global-network
     depends_on:
