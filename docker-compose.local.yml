@@ -1,0 +1,23 @@
+# ============================================================
+# docker-compose.local.yml — Override untuk Testing Lokal
+# ============================================================
+# Cara penggunaan:
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up -d --build
+#
+# File ini MENGGANTIKAN konfigurasi image GHCR dengan
+# build lokal langsung dari source code.
+# ============================================================
+
+services:
+  db:
+    # Expose port MySQL ke host agar bisa diakses via localhost:3306
+    # (berguna untuk koneksi dari Drizzle Studio / TablePlus / DBeaver)
+    ports:
+      - "3306:3306"
+
+  backend:
+    # Override: build dari Dockerfile lokal, bukan pull dari GHCR
+    image: diklat-be-app:local
+    build:
+      context: .
+      dockerfile: Dockerfile

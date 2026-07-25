@@ -1,0 +1,58 @@
+services:
+  # ─────────────────────────────────────────────
+  # Service: MySQL Database
+  # ─────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: diklat-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - diklat_mysql_data:/var/lib/mysql
+    networks:
+      - diklat-global-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ─────────────────────────────────────────────
+  # Service: Hono Backend Application
+  # ─────────────────────────────────────────────
+  backend:
+    image: ghcr.io/${GITHUB_REPOSITORY}/diklat-be-app:latest
+    container_name: diklat-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Override DATABASE_URL to point to the 'db' service container
+      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+    ports:
+      - "3000:3000"
+    networks:
+      - diklat-global-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+# ─────────────────────────────────────────────
+# Named Volumes
+# ─────────────────────────────────────────────
+volumes:
+  diklat_mysql_data:
+    driver: local
+
+# ─────────────────────────────────────────────
+# Networks — shared dengan diklat-fe-app
+# ─────────────────────────────────────────────
+networks:
+  diklat-global-network:
+    name: diklat-global-network
+    driver: bridge
