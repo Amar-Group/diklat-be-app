@@ -25,6 +25,7 @@ COPY --from=builder /app/node_modules ./node_modules
 
 # Copy source code and config files
 COPY src ./src
+COPY drizzle ./drizzle
 COPY drizzle.config.ts ./
 COPY tsconfig.json ./
 COPY package.json ./
