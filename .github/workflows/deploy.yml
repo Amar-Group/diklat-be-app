@@ -86,6 +86,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
+            set -e
             # ── Navigasi ke direktori backend di VPS ──
             cd /var/www/diklat-be
 
