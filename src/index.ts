@@ -22,6 +22,14 @@ app.use(logger());
 app.use(loggerMiddleware);
 
 // Welcome endpoint (Public)
+
+app.get('/ninuu', (c) => {
+  return c.json({
+    success: true,
+    message: 'Test',
+  })
+})
+
 app.get('/', (c) => {
   return c.json({
     success: true,

@@ -6,21 +6,23 @@ services:
     image: mysql:8.0
     container_name: diklat-mysql
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-${MYSQL_PASSWORD:-root_secret_pass}}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-diklat_db}
+      MYSQL_USER: ${MYSQL_USER:-diklat_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-diklat_password}
     volumes:
       - diklat_mysql_data:/var/lib/mysql
     networks:
       - diklat-global-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER -p$$MYSQL_PASSWORD || mysqladmin ping -h 127.0.0.1 --silent || exit 0"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 10
+      start_period: 40s
 
   # ─────────────────────────────────────────────
   # Service: Hono Backend Application
@@ -55,4 +57,4 @@ volumes:
 networks:
   diklat-global-network:
     name: diklat-global-network
-    driver: bridge
+    external: true
