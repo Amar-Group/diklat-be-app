@@ -1,0 +1,35 @@
+# ---- Git & VCS ----
+.git
+.gitignore
+
+# ---- Dependencies (akan diinstall ulang di dalam container) ----
+node_modules/
+
+# ---- Environment & Secrets ----
+.env
+.env.*
+!.env.example
+
+# ---- Build artifacts & DB lokal ----
+drizzle/
+*.db
+*.sqlite
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- OS & Editor ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ---- Agent & CI (tidak perlu masuk image) ----
+.agents/
+.github/
+
+# ---- Dokumentasi ----
+README.md
+STRUCTURE.md
+AGENTS.md
