@@ -1,5 +1,5 @@
 import { isNotNull, isNull, sql } from "drizzle-orm";
-import { db, menus, role_permissions, roles, users, instructor_profiles, participant_profiles, class_instructors, class_participants } from "./index";
+import { db, menus, role_permissions, roles, users, instructor_profiles, participant_profiles, class_instructors, class_participants, courses, classes } from "./index";
 import { hash } from "bcryptjs";
 
 const roleSeedData = [
@@ -219,6 +219,8 @@ async function clearAllTables() {
   await db.delete(participant_profiles);
   await db.delete(class_instructors);
   await db.delete(class_participants);
+  await db.delete(classes);
+  await db.delete(courses);
   
   await db.delete(users);
   await db.delete(roles);
@@ -394,6 +396,38 @@ async function seed() {
     });
 
     await db.insert(role_permissions).values(permissionsToInsert);
+
+    console.log("Seeding courses...");
+    const insertedCourses = await db.insert(courses).values([
+      {
+        title: "Pelatihan Persiapan Pensiun / Pra-Pensiun",
+        description: "Pelatihan Masa Persiapan Pensiun bertujuan membantu pegawai (PNS/Swasta) menghadapi masa purna tugas secara optimal agar tetap sejahtera, mandiri, dan bermakna.",
+        competencies: "Manajemen Keuangan, Kewirausahaan UMKM, Pengelolaan Stress, Pola Hidup Sehat Lansia",
+        is_active: true,
+      },
+      {
+        title: "Pelatihan Peningkatan Kapasitas Aparatur Desa",
+        description: "Peningkatan kapasitas aparatur desa yang mencakup pengembangan sumber daya manusia, penguatan organisasi, dan reformasi institusi agar tata kelola administrasi dan pelayanan publik berjalan dengan baik.",
+        competencies: "RPJM/RKP Desa, Tata Kelola Desa, Kepemimpinan SOTK, SISKEUDES & SIPADES, Manajemen Keuangan & Aset Desa",
+        is_active: true,
+      },
+    ]).$returningId();
+
+    console.log("Seeding classes...");
+    await db.insert(classes).values([
+      {
+        course_id: insertedCourses[0].id,
+        batch_name: "Angkatan 1 - Persiapan Pensiun 2026",
+        method: "hybrid",
+        price: "5500000.00",
+      },
+      {
+        course_id: insertedCourses[1].id,
+        batch_name: "Angkatan 1 - Peningkatan Kapasitas Aparatur Desa 2026",
+        method: "offline",
+        price: "5500000.00",
+      },
+    ]);
 
     console.log("Database seeded successfully!");
     process.exit(0);
