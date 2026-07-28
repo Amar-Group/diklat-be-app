@@ -12,6 +12,10 @@ import {
   createOpenApiDocument,
   getServerUrl,
 } from './docs/openapi';
+import { initSystemData } from './db/init';
+
+// Run safe system data initialization on startup
+initSystemData();
 
 const app = new Hono();
 
