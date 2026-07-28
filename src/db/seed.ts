@@ -69,6 +69,13 @@ const menuSeedData = [
     icon: "MonitorPlay",
     parentName: "Diklat Management",
   },
+  {
+    name: "Kurikulum",
+    path: "/diklat/curriculum",
+    permissionPath: "/api/modules",
+    icon: "BookMarked",
+    parentName: "Diklat Management",
+  },
   // 4. LMS Studio
   {
     name: "LMS Studio",
