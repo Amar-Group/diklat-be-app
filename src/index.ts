@@ -12,6 +12,10 @@ import {
   createOpenApiDocument,
   getServerUrl,
 } from './docs/openapi';
+import { initSystemData } from './db/init';
+
+// Run safe system data initialization on startup
+initSystemData();
 
 const app = new Hono();
 
@@ -62,6 +66,7 @@ app.get('/docs', apiReference({
 
 import companyRoutes from './app/company/route/company.route';
 import courseRoutes from './app/course/route/course.route';
+import { publicCatalogRouter } from './app/course/route/public-catalog.route';
 import { instructorRouter } from './app/instructor/route/instructor.route';
 import { participantRouter } from './app/participant/route/participant.route';
 import { classRouter } from './app/class/route/class.route';
@@ -84,6 +89,7 @@ app.route('/api/menus', menuRoutes);
 app.route('/api/role-permissions', rolePermissionRoutes);
 app.route('/api/companies', companyRoutes);
 app.route('/api/courses', courseRoutes);
+app.route('/api/public', publicCatalogRouter);
 app.route('/api/instructors', instructorRouter);
 app.route('/api/participants', participantRouter);
 app.route('/api/classes', classRouter);
