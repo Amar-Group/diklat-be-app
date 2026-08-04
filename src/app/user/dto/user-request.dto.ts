@@ -29,3 +29,15 @@ export const updateUserRequestSchema = z
 export type LoginRequestDto = z.infer<typeof loginRequestSchema>;
 export type CreateUserRequestDto = z.infer<typeof createUserRequestSchema>;
 export type UpdateUserRequestDto = z.infer<typeof updateUserRequestSchema>;
+
+export const registerParticipantRequestSchema = z
+  .object({
+    name: z.string().min(1).openapi({ example: "Budi Santoso" }),
+    email: z.string().email().openapi({ example: "budi@example.com" }),
+    phone_number: z.string().min(1).openapi({ example: "08123456789" }),
+    password: z.string().min(6).openapi({ example: "password123" }),
+  })
+  .openapi("RegisterParticipantRequest");
+
+export type RegisterParticipantRequestDto = z.infer<typeof registerParticipantRequestSchema>;
+

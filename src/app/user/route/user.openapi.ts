@@ -13,6 +13,7 @@ import {
   loginRequestSchema,
   createUserRequestSchema,
   updateUserRequestSchema,
+  registerParticipantRequestSchema,
 } from "../dto/user-request.dto";
 import {
   loginResponseSchema,
@@ -43,6 +44,27 @@ export const loginUserRoute = createRoute({
     500: errorResponses[500],
   },
 });
+
+export const registerParticipantRoute = createRoute({
+  method: "post",
+  path: "/register",
+  tags: ["Users"],
+  summary: "Register new participant",
+  security: [],
+  request: {
+    body: {
+      required: true,
+      content: { "application/json": { schema: registerParticipantRequestSchema } },
+    },
+  },
+  responses: {
+    201: jsonResponse(userMutationResponseSchema, "Registration successful"),
+    400: jsonResponse(apiErrorResponseSchema, "Validation error"),
+    409: jsonResponse(apiErrorResponseSchema, "Email already exists"),
+    500: errorResponses[500],
+  },
+});
+
 
 export const getAllUsersRoute = createRoute({
   method: "get",

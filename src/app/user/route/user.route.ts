@@ -14,6 +14,7 @@ import {
   getCurrentUserNavigationRoute,
   getUserByIdRoute,
   loginUserRoute,
+  registerParticipantRoute,
   updateUserRoute,
 } from "./user.openapi";
 
@@ -22,6 +23,7 @@ const router = createOpenApiRouter();
 registerDefaultSecuritySchemes(router);
 
 registerOpenApiRoute(router, loginUserRoute, UserAuthController.login);
+registerOpenApiRoute(router, registerParticipantRoute, UserAuthController.registerParticipant);
 registerOpenApiRoute(router, getAllUsersRoute, UserController.getAll);
 registerOpenApiRoute(
   router,

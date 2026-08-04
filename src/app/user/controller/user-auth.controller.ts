@@ -20,4 +20,21 @@ export class UserAuthController {
       message: "Login successful",
     });
   }
+
+  static async registerParticipant(c: Context) {
+    const payload = await c.req.json();
+    const result = await UserAuthService.registerParticipant(payload);
+    
+    if (!result.success) {
+      return c.json(
+        { success: false, message: result.message },
+        400
+      );
+    }
+    
+    return c.json(
+      { success: true, data: result.data, message: "Registration successful" },
+      201
+    );
+  }
 }

@@ -10,6 +10,7 @@ export type LoginResponseDto = {
     email: string;
     name: string;
     role_id: number;
+    role_code?: string;
   };
 };
 
@@ -27,6 +28,7 @@ export const loginDataSchema = z
       email: z.string().email().openapi({ example: "admin@example.com" }),
       name: z.string().openapi({ example: "Admin User" }),
       role_id: z.number().int().openapi({ example: 1 }),
+      role_code: z.string().optional().openapi({ example: "PARTICIPANT" }),
     }),
   })
   .openapi("LoginResponse");
