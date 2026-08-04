@@ -41,3 +41,19 @@ export const registerParticipantRequestSchema = z
 
 export type RegisterParticipantRequestDto = z.infer<typeof registerParticipantRequestSchema>;
 
+export const verifyOtpRequestSchema = z
+  .object({
+    email: z.string().email().openapi({ example: "budi@example.com" }),
+    otp: z.string().length(6).openapi({ example: "123456" }),
+  })
+  .openapi("VerifyOtpRequest");
+
+export type VerifyOtpRequestDto = z.infer<typeof verifyOtpRequestSchema>;
+
+export const resendOtpRequestSchema = z
+  .object({
+    email: z.string().email().openapi({ example: "budi@example.com" }),
+  })
+  .openapi("ResendOtpRequest");
+
+export type ResendOtpRequestDto = z.infer<typeof resendOtpRequestSchema>;

@@ -14,6 +14,8 @@ import {
   createUserRequestSchema,
   updateUserRequestSchema,
   registerParticipantRequestSchema,
+  verifyOtpRequestSchema,
+  resendOtpRequestSchema,
 } from "../dto/user-request.dto";
 import {
   loginResponseSchema,
@@ -65,6 +67,43 @@ export const registerParticipantRoute = createRoute({
   },
 });
 
+export const verifyOtpRoute = createRoute({
+  method: "post",
+  path: "/verify-otp",
+  tags: ["Users"],
+  summary: "Verify OTP for participant registration",
+  security: [],
+  request: {
+    body: {
+      required: true,
+      content: { "application/json": { schema: verifyOtpRequestSchema } },
+    },
+  },
+  responses: {
+    200: jsonResponse(userMutationResponseSchema, "Verification successful"),
+    400: jsonResponse(apiErrorResponseSchema, "Validation error or invalid OTP"),
+    500: errorResponses[500],
+  },
+});
+
+export const resendOtpRoute = createRoute({
+  method: "post",
+  path: "/resend-otp",
+  tags: ["Users"],
+  summary: "Resend OTP for participant registration",
+  security: [],
+  request: {
+    body: {
+      required: true,
+      content: { "application/json": { schema: resendOtpRequestSchema } },
+    },
+  },
+  responses: {
+    200: jsonResponse(userMutationResponseSchema, "OTP Resent successfully"),
+    400: jsonResponse(apiErrorResponseSchema, "Validation error"),
+    500: errorResponses[500],
+  },
+});
 
 export const getAllUsersRoute = createRoute({
   method: "get",
