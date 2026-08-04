@@ -8,11 +8,10 @@
 
 Sebelum mengerjakan task apapun, **WAJIB baca `STRUCTURE.md`** untuk memahami:
 - Arsitektur module-based layered
-- Database schema dan relasi (16 tabel)
+- Database schema dan relasi (19 tabel)
 - Alur request dan middleware chain
 - Pola coding yang digunakan
 - Sistem RBAC dinamis
-- Integrasi Midtrans payment gateway
 
 ---
 
@@ -27,7 +26,6 @@ Sebelum mengerjakan task apapun, **WAJIB baca `STRUCTURE.md`** untuk memahami:
 | **API Docs** | OpenAPI 3.0.3 + Scalar |
 | **Auth** | JWT (jsonwebtoken) + bcryptjs |
 | **Upload** | Cloudinary (signed upload pattern) |
-| **Payment** | Midtrans (Snap + Core API via `midtrans-client`) |
 | **Deployment** | Vercel (serverless) |
 
 **Penting:**
@@ -61,12 +59,12 @@ src/app/{module_name}/
 ```
 
 ### Naming Convention
-- **Folder module**: `snake_case` (contoh: `role_permission`)
+- **Folder module**: `snake_case` (contoh: `role_permission`, `course_module`)
 - **File**: `kebab-case` (contoh: `role-permission-read.repository.ts`)
-- **Class**: `PascalCase` (contoh: `RolePermissionReadRepository`)
-- **Zod schema**: `camelCase` + deskriptif (contoh: `createMenuRequestSchema`)
-- **OpenAPI name**: `PascalCase` (contoh: `"CreateMenuRequest"`)
-- **Route variable**: `camelCase` + `Route` suffix (contoh: `getAllMenusRoute`)
+- **Class**: `PascalCase` (contoh: `CourseReadRepository`)
+- **Zod schema**: `camelCase` + deskriptif (contoh: `createCourseRequestSchema`)
+- **OpenAPI name**: `PascalCase` (contoh: `"CreateCourseRequest"`)
+- **Route variable**: `camelCase` + `Route` suffix (contoh: `getAllCoursesRoute`)
 
 ---
 
@@ -171,22 +169,6 @@ export function getXxxOpenApiDocument(baseUrl: string) {
 export default router;
 ```
 
-**Pola Hybrid (campuran public + protected):**
-```typescript
-// Contoh: payment module — webhook public, CRUD protected
-const router = createOpenApiRouter();
-registerDefaultSecuritySchemes(router);
-
-// 1. Register PUBLIC routes SEBELUM middleware
-registerOpenApiRoute(router, publicWebhookRoute, Controller.webhook);
-
-// 2. Apply middleware SETELAH public routes
-router.use("*", jwtMiddleware, appTokenMiddleware, requirePermission());
-
-// 3. Register PROTECTED routes
-registerOpenApiRoute(router, getAllRoute, Controller.getAll);
-```
-
 ### 4.6 Controller
 ```typescript
 export class XxxController {
@@ -203,15 +185,15 @@ export class XxxController {
   }
 
   static async create(c: Context) {
-    const body: CreateXxxRequestDto = await c.req.json();
-    const result = await XxxService.create(body);
-    return c.json({ success: true, data: result, message: "Xxx created successfully" }, 201);
+    const payload = c.get("valid") as CreateXxxRequestDto;
+    const createResult = await XxxService.create(payload);
+    return c.json({ success: true, data: createResult.result, message: "Xxx created successfully" }, 201);
   }
 
   static async update(c: Context) {
     const id = Number(c.req.param("id"));
-    const body: UpdateXxxRequestDto = await c.req.json();
-    const updateResult = await XxxService.update(id, body);
+    const payload = c.get("valid") as UpdateXxxRequestDto;
+    const updateResult = await XxxService.update(id, payload);
     if (!updateResult) return c.json({ success: false, message: "Xxx not found" }, 404);
     return c.json({ success: true, data: updateResult.result, message: "Xxx updated successfully" });
   }
@@ -226,7 +208,6 @@ export class XxxController {
 ```
 
 **PENTING:** Controller **TIDAK** boleh punya try-catch manual. Error ditangani oleh global error handler di `middleware/errorHandler.ts`.
-**EXCEPTION:** Webhook handlers (seperti `PaymentController.midtransWebhook`) boleh menggunakan try-catch karena menangani verifikasi signature secara manual.
 
 ### 4.7 Service
 ```typescript
@@ -311,70 +292,34 @@ export class XxxWriteRepository {
 
 ---
 
-## 5. Checklist Saat Menambah Module Baru
+## 5. Checklist Saat Menambah Module Baru (Contoh Fitur LMS)
 
 Setelah membuat 6 layer di atas, jangan lupa:
 
 ### A. Database
-- [ ] Tambah tabel baru di `src/db/schema.ts`
-- [ ] Jalankan `bun run db:generate` lalu `bun run db:migrate`
+- [ ] Tambah tabel baru di `src/db/schema.ts` (misal untuk tugas, presensi, dll).
+- [ ] Jalankan `bun run db:generate` lalu `bun run db:migrate`.
 
 ### B. OpenAPI Schemas
-- [ ] Tambah entity schema di `src/docs/openapi-schemas.ts`
+- [ ] Tambah entity schema di `src/docs/openapi-schemas.ts`.
 
 ### C. Route Registration
-- [ ] Import route di `src/index.ts`
-- [ ] Mount route: `app.route('/api/{module}', xxxRoutes)`
+- [ ] Import route di `src/index.ts`.
+- [ ] Mount route: `app.route('/api/{module}', xxxRoutes)`.
 
 ### D. OpenAPI Document Merger
-- [ ] Import `getXxxOpenApiDocument` di `src/docs/openapi.ts`
-- [ ] Tambahkan ke `moduleDocuments` array dengan `mountOpenApiPaths()`
-- [ ] Tambahkan tag baru ke `tags` array di `createBaseDocument()`
+- [ ] Import `getXxxOpenApiDocument` di `src/docs/openapi.ts`.
+- [ ] Tambahkan ke `moduleDocuments` array dengan `mountOpenApiPaths()`.
+- [ ] Tambahkan tag baru ke `tags` array di `createBaseDocument()`.
 
 ### E. RBAC / Permission
-- [ ] Tambahkan entry di tabel `menus` dengan `permission_path: '/api/{module}'`
-- [ ] Tambahkan `role_permissions` untuk setiap role yang perlu akses
-- [ ] Update `seed.ts` jika perlu
+- [ ] Tambahkan entry di tabel `menus` dengan `permission_path: '/api/{module}'`.
+- [ ] Tambahkan `role_permissions` untuk setiap role yang perlu akses.
+- [ ] Update `seed.ts` jika perlu agar role Admin bisa langsung mengaksesnya.
 
 ---
 
-## 6. Pola Middleware
-
-### Tiga Strategi Middleware:
-
-**A. Global Module Middleware** (di `*.route.ts`)
-```typescript
-router.use("*", jwtMiddleware, appTokenMiddleware, requirePermission());
-```
-Gunakan ini ketika **semua endpoint** di module memerlukan auth + permission yang sama.
-Contoh: module `menu`, `role`, `role_permission`, `schedule`, `dish_category`.
-
-**B. Per-Endpoint Middleware** (di `*.openapi.ts`)
-```typescript
-export const someRoute = createRoute({
-  // ...
-  middleware: [jwtMiddleware, appTokenMiddleware, requirePermission()] as const,
-  // ...
-});
-```
-Gunakan ini ketika module punya campuran endpoint public dan protected.
-Contoh: module `user` (login public, CRUD protected).
-
-**C. Hybrid (Public + Protected di route.ts)**
-```typescript
-// Register public routes SEBELUM middleware
-registerOpenApiRoute(router, publicRoute, Controller.publicHandler);
-// Apply middleware global
-router.use("*", jwtMiddleware, appTokenMiddleware, requirePermission());
-// Register protected routes SETELAH middleware
-registerOpenApiRoute(router, protectedRoute, Controller.protectedHandler);
-```
-Gunakan ini ketika module punya webhook atau endpoint public yang tidak memerlukan auth sama sekali.
-Contoh: module `payment` (Midtrans webhook public, CRUD protected).
-
----
-
-## 7. Response Format
+## 6. Response Format
 
 Semua API response mengikuti format envelope yang konsisten:
 
@@ -411,14 +356,12 @@ Semua API response mengikuti format envelope yang konsisten:
 
 ---
 
-## 8. Import Conventions
+## 7. Import Conventions
 
 ```typescript
 // Database
 import { db } from "../../../db";
 import { tableName } from "../../../db/schema";
-// atau
-import { db, tableName } from "../../../db";
 
 // Middleware
 import { jwtMiddleware } from "../../../middleware/auth";
@@ -437,8 +380,6 @@ import {
   errorResponses,
   jsonResponse,
   writeResultSchema,
-  apiErrorResponseSchema,
-  timestampSchema,
 } from "../../../docs/openapi-common";
 
 // Entity schemas (untuk response DTOs)
@@ -446,34 +387,31 @@ import { xxxSchema } from "../../../docs/openapi-schemas";
 
 // Drizzle operators
 import { eq, and, isNull, isNotNull } from "drizzle-orm";
-
-// Midtrans (jika perlu integrasi payment)
-import { snap, coreApi } from "../../../lib/midtrans";
 ```
 
 ---
 
-## 9. Hal yang TIDAK Boleh Dilakukan
+## 8. Hal yang TIDAK Boleh Dilakukan
 
-1. ❌ **Jangan** tambahkan try-catch di controller — sudah ditangani global error handler *(kecuali webhook handler yang perlu signature verification)*
-2. ❌ **Jangan** validasi manual di controller — sudah ditangani Zod defaultHook
-3. ❌ **Jangan** hardcode permission check — gunakan `requirePermission()` yang dinamis
-4. ❌ **Jangan** gunakan `npm` atau `yarn` — gunakan `bun`
-5. ❌ **Jangan** buat file migration manual — gunakan `bun run db:generate`
-6. ❌ **Jangan** return response tanpa envelope `{ success, data/message }` — ikuti format standar
-7. ❌ **Jangan** skip OpenAPI registration — semua endpoint harus terdokumentasi
+1. ❌ **Jangan** tambahkan try-catch di controller — sudah ditangani global error handler.
+2. ❌ **Jangan** validasi manual di controller — sudah ditangani Zod defaultHook.
+3. ❌ **Jangan** hardcode permission check — gunakan `requirePermission()` yang dinamis.
+4. ❌ **Jangan** gunakan `npm` atau `yarn` — gunakan `bun`.
+5. ❌ **Jangan** buat file migration manual — gunakan `bun run db:generate`.
+6. ❌ **Jangan** return response tanpa envelope `{ success, data/message }` — ikuti format standar.
+7. ❌ **Jangan** skip OpenAPI registration — semua endpoint harus terdokumentasi.
 
 ---
 
-## 10. Hal yang WAJIB Dilakukan
+## 9. Hal yang WAJIB Dilakukan
 
-1. ✅ Baca `STRUCTURE.md` di awal setiap conversation
-2. ✅ Ikuti 6-layer pattern secara konsisten
-3. ✅ Gunakan CQRS (read/write repository terpisah)
-4. ✅ Register semua route baru di `index.ts` dan `openapi.ts`
-5. ✅ Tambahkan entity schema baru di `openapi-schemas.ts`
-6. ✅ Update seed data jika menambah menu/permission baru
-7. ✅ Gunakan `static` methods untuk semua class (Controller, Service, Repository)
-8. ✅ Sertakan `updated_at: new Date()` pada semua update operations
-9. ✅ Gunakan `openapi()` method pada setiap Zod schema yang diekspos ke API
-10. ✅ Export `getXxxOpenApiDocument()` dari setiap module route
+1. ✅ Baca `STRUCTURE.md` di awal setiap conversation.
+2. ✅ Ikuti 6-layer pattern secara konsisten.
+3. ✅ Gunakan CQRS (read/write repository terpisah).
+4. ✅ Register semua route baru di `index.ts` dan `openapi.ts`.
+5. ✅ Tambahkan entity schema baru di `openapi-schemas.ts`.
+6. ✅ Update seed data jika menambah menu/permission baru.
+7. ✅ Gunakan `static` methods untuk semua class (Controller, Service, Repository).
+8. ✅ Sertakan `updated_at: new Date()` pada semua update operations.
+9. ✅ Gunakan `openapi()` method pada setiap Zod schema yang diekspos ke API.
+10. ✅ Export `getXxxOpenApiDocument()` dari setiap module route.
