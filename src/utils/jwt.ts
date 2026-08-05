@@ -7,6 +7,7 @@ export interface TokenPayload {
   email: string;
   name: string;
   role_id: number;
+  role_code?: string;
 }
 
 type JWTExpire = "1h" | "24h" | "7d";

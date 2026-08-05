@@ -13,6 +13,9 @@ import {
   loginRequestSchema,
   createUserRequestSchema,
   updateUserRequestSchema,
+  registerParticipantRequestSchema,
+  verifyOtpRequestSchema,
+  resendOtpRequestSchema,
 } from "../dto/user-request.dto";
 import {
   loginResponseSchema,
@@ -40,6 +43,64 @@ export const loginUserRoute = createRoute({
     200: jsonResponse(loginResponseSchema, "Successful login"),
     400: jsonResponse(apiErrorResponseSchema, "Email and password are required"),
     401: jsonResponse(apiErrorResponseSchema, "Invalid email or password"),
+    500: errorResponses[500],
+  },
+});
+
+export const registerParticipantRoute = createRoute({
+  method: "post",
+  path: "/register",
+  tags: ["Users"],
+  summary: "Register new participant",
+  security: [],
+  request: {
+    body: {
+      required: true,
+      content: { "application/json": { schema: registerParticipantRequestSchema } },
+    },
+  },
+  responses: {
+    201: jsonResponse(userMutationResponseSchema, "Registration successful"),
+    400: jsonResponse(apiErrorResponseSchema, "Validation error"),
+    409: jsonResponse(apiErrorResponseSchema, "Email already exists"),
+    500: errorResponses[500],
+  },
+});
+
+export const verifyOtpRoute = createRoute({
+  method: "post",
+  path: "/verify-otp",
+  tags: ["Users"],
+  summary: "Verify OTP for participant registration",
+  security: [],
+  request: {
+    body: {
+      required: true,
+      content: { "application/json": { schema: verifyOtpRequestSchema } },
+    },
+  },
+  responses: {
+    200: jsonResponse(userMutationResponseSchema, "Verification successful"),
+    400: jsonResponse(apiErrorResponseSchema, "Validation error or invalid OTP"),
+    500: errorResponses[500],
+  },
+});
+
+export const resendOtpRoute = createRoute({
+  method: "post",
+  path: "/resend-otp",
+  tags: ["Users"],
+  summary: "Resend OTP for participant registration",
+  security: [],
+  request: {
+    body: {
+      required: true,
+      content: { "application/json": { schema: resendOtpRequestSchema } },
+    },
+  },
+  responses: {
+    200: jsonResponse(userMutationResponseSchema, "OTP Resent successfully"),
+    400: jsonResponse(apiErrorResponseSchema, "Validation error"),
     500: errorResponses[500],
   },
 });

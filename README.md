@@ -57,6 +57,7 @@ Keterangan:
 - `ALLOWED_APP_URL`: daftar origin frontend, pisahkan dengan koma jika lebih dari satu
 - `CLOUDINARY_URL`: satu konfigurasi Cloudinary untuk upload
 - `CLOUDINARY_FOLDER`: folder default upload Cloudinary, default `uploads`
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`: Kredensial email (NodeMailer) untuk pengiriman OTP. Jika menggunakan Gmail, `SMTP_PORT` adalah 587 dan `SMTP_PASS` harus menggunakan *App Password* (Sandi Aplikasi).
 
 ## Setup Database
 
@@ -111,6 +112,9 @@ Endpoint public:
 - `GET /docs`
 - `GET /openapi.json`
 - `POST /api/users/login`
+- `POST /api/users/register` (Registrasi peserta baru)
+- `POST /api/users/verify-otp` (Validasi OTP registrasi)
+- `POST /api/users/resend-otp` (Kirim ulang email OTP)
 
 ## Struktur API
 
