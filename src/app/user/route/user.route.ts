@@ -14,7 +14,10 @@ import {
   getCurrentUserNavigationRoute,
   getUserByIdRoute,
   loginUserRoute,
+  registerParticipantRoute,
   updateUserRoute,
+  verifyOtpRoute,
+  resendOtpRoute,
 } from "./user.openapi";
 
 const router = createOpenApiRouter();
@@ -22,6 +25,9 @@ const router = createOpenApiRouter();
 registerDefaultSecuritySchemes(router);
 
 registerOpenApiRoute(router, loginUserRoute, UserAuthController.login);
+registerOpenApiRoute(router, registerParticipantRoute, UserAuthController.registerParticipant);
+registerOpenApiRoute(router, verifyOtpRoute, UserAuthController.verifyOtp);
+registerOpenApiRoute(router, resendOtpRoute, UserAuthController.resendOtp);
 registerOpenApiRoute(router, getAllUsersRoute, UserController.getAll);
 registerOpenApiRoute(
   router,

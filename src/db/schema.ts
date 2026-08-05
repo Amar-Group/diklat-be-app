@@ -96,6 +96,9 @@ export const users = mysqlTable(
     role_id: int().notNull(),
     company_id: int(), // Nullable (for individual participants/admins)
     is_active: boolean().default(true),
+    is_verified: boolean().default(false), // Indicates if email is verified
+    verification_token: varchar({ length: 100 }), // OTP or email token
+    token_expires_at: datetime(), // Expiration time for the token
     created_at: datetime().default(sql`CURRENT_TIMESTAMP`).notNull(),
     updated_at: datetime().default(sql`CURRENT_TIMESTAMP`).notNull(),
   },
