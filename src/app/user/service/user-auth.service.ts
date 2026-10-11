@@ -30,7 +30,7 @@ export class UserAuthService {
     }
 
     // Cek apakah akun terverifikasi (khusus peserta)
-    if (user.is_verified === false) {
+    if ((user as any).is_verified === false) {
       return { success: false, message: "Email belum diverifikasi. Silakan periksa email Anda untuk kode OTP." };
     }
 

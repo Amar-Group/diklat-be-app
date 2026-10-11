@@ -70,6 +70,7 @@ export class UserReadRepository {
           password: users.password,
           role_id: users.role_id,
           role_code: roles.code,
+          is_verified: users.is_verified,
         })
         .from(users)
         .innerJoin(roles, eq(users.role_id, roles.id))

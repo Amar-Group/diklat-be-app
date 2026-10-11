@@ -269,30 +269,30 @@ export function createOpenApiDocument(baseUrl: string) {
 
 export function getInstructorOpenApiDocument(baseUrl: string) {
   const app = new OpenAPIHono();
-  app.openapi(getInstructorsRoute, (c) => c.json({} as any));
-  app.openapi(getInstructorByIdRoute, (c) => c.json({} as any));
-  app.openapi(createInstructorRoute, (c) => c.json({} as any));
-  app.openapi(updateInstructorRoute, (c) => c.json({} as any));
-  app.openapi(deleteInstructorRoute, (c) => c.json({} as any));
+  app.openapi(getInstructorsRoute as any, ((c: any) => c.json({} as any)) as any);
+  app.openapi(getInstructorByIdRoute as any, ((c: any) => c.json({} as any)) as any);
+  app.openapi(createInstructorRoute as any, ((c: any) => c.json({} as any)) as any);
+  app.openapi(updateInstructorRoute as any, ((c: any) => c.json({} as any)) as any);
+  app.openapi(deleteInstructorRoute as any, ((c: any) => c.json({} as any)) as any);
   return app.getOpenAPIDocument({ openapi: '3.0.3', info: { title: '', version: '' } });
 }
 
 export function getParticipantOpenApiDocument(baseUrl: string) {
   const app = new OpenAPIHono();
-  app.openapi(getParticipantsRoute, (c) => c.json({} as any));
-  app.openapi(getParticipantByIdRoute, (c) => c.json({} as any));
-  app.openapi(createParticipantRoute, (c) => c.json({} as any));
-  app.openapi(updateParticipantRoute, (c) => c.json({} as any));
-  app.openapi(deleteParticipantRoute, (c) => c.json({} as any));
+  app.openapi(getParticipantsRoute as any, ((c: any) => c.json({} as any)) as any);
+  app.openapi(getParticipantByIdRoute as any, ((c: any) => c.json({} as any)) as any);
+  app.openapi(createParticipantRoute as any, ((c: any) => c.json({} as any)) as any);
+  app.openapi(updateParticipantRoute as any, ((c: any) => c.json({} as any)) as any);
+  app.openapi(deleteParticipantRoute as any, ((c: any) => c.json({} as any)) as any);
   return app.getOpenAPIDocument({ openapi: '3.0.3', info: { title: '', version: '' } });
 }
 
 export function getClassOpenApiDocument(baseUrl: string) {
   const app = new OpenAPIHono();
-  app.openapi(getClassesRoute, (c) => c.json({} as any));
-  app.openapi(getClassByIdRoute, (c) => c.json({} as any));
-  app.openapi(createClassRoute, (c) => c.json({} as any));
-  app.openapi(updateClassRoute, (c) => c.json({} as any));
-  app.openapi(deleteClassRoute, (c) => c.json({} as any));
+  app.openapi(getClassesRoute as any, ((c: any) => c.json({} as any)) as any);
+  app.openapi(getClassByIdRoute as any, ((c: any) => c.json({} as any)) as any);
+  app.openapi(createClassRoute as any, ((c: any) => c.json({} as any)) as any);
+  app.openapi(updateClassRoute as any, ((c: any) => c.json({} as any)) as any);
+  app.openapi(deleteClassRoute as any, ((c: any) => c.json({} as any)) as any);
   return app.getOpenAPIDocument({ openapi: '3.0.3', info: { title: '', version: '' } });
 }
