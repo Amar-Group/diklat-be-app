@@ -48,7 +48,7 @@ export class AttendanceController {
       return c.json({ success: true, data, message: "Created successfully" }, 201);
     } catch (error: any) {
       if (error instanceof ZodError) {
-        return c.json({ success: false, message: "Validation Error", errors: ((error as unknown) as ZodError).errors }, 400);
+        return c.json({ success: false, message: "Validation Error", errors: (error as any).issues || (error as any).errors }, 400);
       }
       return c.json({ success: false, message: error.message }, 500);
     }
@@ -62,7 +62,7 @@ export class AttendanceController {
       return c.json({ success: true, data, message: "Updated successfully" });
     } catch (error: any) {
       if (error instanceof ZodError) {
-        return c.json({ success: false, message: "Validation Error", errors: ((error as unknown) as ZodError).errors }, 400);
+        return c.json({ success: false, message: "Validation Error", errors: (error as any).issues || (error as any).errors }, 400);
       }
       return c.json({ success: false, message: error.message }, 500);
     }
